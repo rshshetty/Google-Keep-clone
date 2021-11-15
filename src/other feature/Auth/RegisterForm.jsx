@@ -4,7 +4,7 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import MyTextInput from '../form/MyTextInput';
 import { Button, Label, Divider } from 'semantic-ui-react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { registerInFirebase } from '../firestore/firebaseService';
 import SocialLogin from './SocialLogin';
@@ -12,9 +12,9 @@ import { closeModal } from '../modals/modalReducer';
 
 export default function RegisterForm() {
     const dispatch = useDispatch();
-
+const { mode } = useSelector(state => state.event)
     return (
-        <ModalWrapper size='mini' header='Register to Re-vents'>
+        <ModalWrapper size='mini' header='Register to Keeper App'>
             <Formik
                 initialValues={{displayName: '', email: '', password: ''}}
                 validationSchema={Yup.object({
@@ -40,15 +40,15 @@ export default function RegisterForm() {
                         <MyTextInput name='password' placeholder='Password' type='password' />
                         {errors.auth && <Label basic color='red' style={{marginBottom: 10}} content={errors.auth} />}
                         <Button 
-                            // loading={isSubmitting}
+                            loading={isSubmitting}
                             disabled={!isValid || !dirty || isSubmitting}
                             type='submit'
                             fluid
                             size='large'
-                            color='teal'
+                             color={mode==='dark'?'grey':'teal'}
                             content='Register'
                         />
-                        <Divider horizontal>Or</Divider>
+                        <Divider horizontal  style={{color:(mode==='dark'&&'#FFFFFF')}}>Or</Divider>
                         <SocialLogin />
                     </Form>
                 )}

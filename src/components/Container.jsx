@@ -9,11 +9,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import firebase from './../firebase';
 
 
+
 const Container = () => {
  
-
-   
-
 
   const user = firebase.auth().currentUser;
   
@@ -27,18 +25,16 @@ const {authenticated} = useSelector(state => state.auth);
  
  
 
-console.log({comments});
   
   useEffect(() => {
     if (user) {
-      
       getEventChatRef(user.uid).on('value', snapshot => {
         if (!snapshot.exists()) return;
         dispatch(listenToEventChat(firebaseObjectToArray(snapshot.val())));
       })
     }
     else {
-      
+      return null;
     }
       },[user,dispatch])
   
@@ -56,7 +52,7 @@ console.log({comments});
         return val
       } else if (val.title.toLowerCase().includes(searchTerm.toLowerCase()) || val.content.toLowerCase().includes(searchTerm.toLowerCase())) {
         return val
-      }
+      } else return null;
 
     })
     .map((n,index) => {

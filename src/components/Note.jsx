@@ -1,12 +1,13 @@
 import React from "react";
 import DeleteIcon from "@material-ui/icons/Delete";
-
+import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined';
 import firebase from './../firebase';
+import TurnedInIcon from '@material-ui/icons/TurnedIn';
+import EditIcon from '@material-ui/icons/Edit';
+import TextareaAutosize from 'react-textarea-autosize';
 
 
-
-
-const Note=({ uid, title, content,id}) =>{
+const Note=({ title, content,id}) =>{
   const [editNote, setEditNote] = React.useState(false);
   const [currentNote, setCurrentNote] = React.useState({
     id,
@@ -21,7 +22,7 @@ const Note=({ uid, title, content,id}) =>{
    const user = firebase.auth().currentUser;
   
   
-  console.log(id);
+ 
   
 
   //delete operation
@@ -42,7 +43,7 @@ const Note=({ uid, title, content,id}) =>{
       title: currentNote.editTitle,
      content: currentNote.editContent
 })
-  
+  setEditNote(false);
   }
 
 
@@ -74,7 +75,7 @@ const Note=({ uid, title, content,id}) =>{
 
 
   return (
-    <div style={{marginTop:"100px" }}>
+    <div >
      
       
       {editNote ? (
@@ -86,24 +87,23 @@ const Note=({ uid, title, content,id}) =>{
              onChange={handleInputEdit}
             className='edit-input'
           />
-          <textarea
-            name='editContent'
+          <TextareaAutosize
+             name='editContent'
             defaultValue={currentNote.editContent}
-            row='1'
+            onInput='auto_grow'
+            
              onChange={handleInputEdit}
             className='edit-input'
           />
-          <button onClick={() => setEditNote(false)}>Cancel</button>
-          <button onClick={UpdateNote}>Save</button>
-        </div>
-      ) : (
-          
-          <div className='note'
-            
-             onDoubleClick={handleEdit}
-          >
+           <CancelOutlinedIcon onClick={() => setEditNote(false)} />
+         
+          <TurnedInIcon onClick={UpdateNote} style={{ marginLeft: '4px' }} />
+        </div>) :
+        (<div className='note'>
           <h1>{title}</h1>
             <p>{content}</p>
+            <EditIcon onClick={handleEdit} style={{ display: 'inline', marginRight: "10px" }} />
+
             <DeleteIcon onClick={handleDelete}/>
         </div>
   )

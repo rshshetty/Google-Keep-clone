@@ -1,5 +1,5 @@
 
-import { LISTEN_TO_EVENT_CHAT } from './eventConstants';
+import { LISTEN_TO_EVENT_CHAT, SET_MODE } from './eventConstants';
 
 
 
@@ -15,3 +15,9 @@ export function listenToEventChat(comments) {
   };
 }
 
+export function set_mode(mode){
+  return{
+    type:SET_MODE,
+    payload:mode
+  }
+}

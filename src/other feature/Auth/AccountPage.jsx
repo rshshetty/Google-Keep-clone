@@ -3,23 +3,41 @@ import React from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import MyTextInput from '../form/MyTextInput';
-import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-
-// import { Segment, Title } from '@mui/icons-material';
-// import { Label } from '@material-ui/icons';
-// import { Button } from '@material-ui/core';
+ import { Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import { updateUserPassword } from '../firestore/firebaseService';
-
+import ModalWrapper from '../modals/ModalWrapper';
+import { closeModal } from '../modals/modalReducer';
 
 export default function AccountPage() {
+  const dispatch = useDispatch();
+
   const { currentUser } = useSelector((state) => state.auth);
+const { mode } = useSelector(state => state.event)
+
+
+ let StylesLoad = {
+
+    backgroundColor:( mode==='dark'&&'#292929'), 
+    color: (mode=== 'dark' && '#FFFFFF' )
+
+    }
+
+
+
   return (
-    <Segment style={{position:"relative",width:"50%",margin:"auto",bottom:"-300px"}} >
-      <Header  dividing size='large' content='Account' />
+    <ModalWrapper size='mini' header='Update Password'>
+      <Segment style={StylesLoad}
+        //style={{ position: "relative", width: "25%", margin: "auto", bottom: "-100px" }}
+      >
+      <Header  dividing size='large' content='Account'
+      style={{color:(mode==='dark'&&'#FFFFFF')}}
+         
+          
+       />
       {currentUser.providerId === 'password' &&
       <>
-        <Header color='teal' sub content='Change Password' />
+        <Header color={mode==='dark'?'grey':'teal'} sub content='Change Password' />
         <p>Use this form to change your password</p>
         <Formik
           initialValues={{ newPassword1: '', newPassword2: '' }}
@@ -28,20 +46,22 @@ export default function AccountPage() {
             newPassword2: Yup.string().oneOf(
               [Yup.ref('newPassword1'), null],
               'Passwords do not match'
-            ),
+            ).required('Re-enter Password'),
           })}
           onSubmit={async (values, {setSubmitting, setErrors}) => {
             try {
-                await updateUserPassword(values);
+              await updateUserPassword(values);
+               dispatch(closeModal());
             } catch (error) {
                 setErrors({auth: error.message}); 
             } finally {
-                setSubmitting(false);
+              setSubmitting(false);
+              
             }
           }}
         >
           {({ errors, isSubmitting, isValid, dirty }) => (
-            <Form className='ui form'>
+            <Form className='ui form' >
               <MyTextInput
                 name='newPassword1'
                 type='password'
@@ -66,7 +86,8 @@ export default function AccountPage() {
                 disabled={!isValid || isSubmitting || !dirty}
                 loading={isSubmitting}
                 size='large'
-                positive
+            color={mode==='dark'?'grey':'teal'}
+               
                 content='Update password'
               />
             </Form>
@@ -80,7 +101,7 @@ export default function AccountPage() {
         <Button
           icon='facebook'
           color='facebook'
-          as={Link}
+         as={Link}
           to='https://facebook.com'
           content='Go to Facebook'
         />
@@ -88,15 +109,16 @@ export default function AccountPage() {
       {currentUser.providerId === 'google.com' && 
       <>
         <Header color='teal' sub content='Google account' />
-        <p>Please visit Facebook to update your account</p>
+        <p>Please visit Google to update your account</p>
         <Button
           icon='google'
           color='google plus'
-          as={Link}
+         as={Link}
           to='https://google.com'
           content='Go to Google'
         />
       </>}
     </Segment>
+    </ModalWrapper >
   );
 }

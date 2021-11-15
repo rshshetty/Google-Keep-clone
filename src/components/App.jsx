@@ -1,28 +1,34 @@
-import React from "react";
+import React,{useEffect} from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import Container from './Container';
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-
-
+import { useSelector } from 'react-redux';
 import { ToastContainer } from "react-toastify";
 import ModalManager from '../other feature/modals/ModalManager';
-import AccountPage from './../other feature/Auth/AccountPage';
+
 
 
 
 function App() {
 
+  const { mode } = useSelector(state => state.event)
+
+ useEffect(() => {
+     if(mode==='dark'){
+       document.body.style.backgroundColor = "#292929"
+     }
+     else {
+       document.body.style.backgroundColor = "#cc8800"
+    }
+    },[mode])
 
   return (
     <div>
    <ModalManager />
       <ToastContainer position='bottom-right' hideProgressBar/>
-              <Header />
+    <Header mode={mode}/>
       <Container />
       <Footer />
-     <Route path='/account' component={AccountPage} />
-       
     </div>
   );
 }

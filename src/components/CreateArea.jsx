@@ -8,14 +8,7 @@ function CreateArea() {
   return (
 
     <div>
- 
-
-      <Noteform
-     
-/>
-      
-   
-
+   <Noteform/>
     </div> 
   );
 }

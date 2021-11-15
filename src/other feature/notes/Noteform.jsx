@@ -1,16 +1,18 @@
 import React,{useState} from 'react'
 import { Field, Form, Formik } from "formik";
-import { Button, Loader } from "semantic-ui-react";
+import { Loader } from "semantic-ui-react";
 import { toast } from 'react-toastify';
 import AddIcon from "@material-ui/icons/Add";
 import Fab from "@material-ui/core/Fab";
 import Zoom from "@material-ui/core/Zoom";
-import * as Yup from 'yup';
 import { addNote } from '../firestore/firebaseService';
 import { useSelector } from 'react-redux';
+import TextareaAutosize from 'react-textarea-autosize';
 
-const Noteform = ({title,content,uid}) => {
+const Noteform = ({ title, content, uid }) => {
+  
 
+  const { mode } = useSelector(state => state.event)
 
  const [isExpanded, setExpanded] = useState(false);
 const {authenticated} = useSelector(state => state.auth);
@@ -19,9 +21,8 @@ const {authenticated} = useSelector(state => state.auth);
  function expand() {
     setExpanded(true);
   }
-  
+ 
 
-  
 
 if(authenticated){
 
@@ -29,10 +30,7 @@ if(authenticated){
     
     <Formik
       initialValues={{ title: '',content:""}}
-      validationSchema={Yup.object({
-        title: Yup.string().required(),
-        content: Yup.string().required()
-      })}
+   
       onSubmit={async (values, { setSubmitting, resetForm }) => {
         try {
           await addNote({...values});
@@ -45,7 +43,7 @@ if(authenticated){
         }
       }}
     >
-      {({ isSubmitting, handleSubmit, isValid }) => (
+      {({ isSubmitting}) => (
 
         <Form className='create-note'>
           <Field name='title'>
@@ -55,15 +53,6 @@ if(authenticated){
                   {isExpanded && (<input
                     {...field}
                     placeholder='Title'
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter' && e.shiftKey) {
-                        return;
-                      }
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        isValid && handleSubmit();
-                      }
-                    }}
                   >
 
                   </input>)}
@@ -74,22 +63,11 @@ if(authenticated){
             {({field}) => (
                 <div style={{position: 'relative'}}>
                     <Loader active={isSubmitting} />
-                  <textarea
-                     onClick={expand}
-                        rows={isExpanded ? 3:1} {...field} 
-                        placeholder='Take a note...'
-                        onKeyPress={(e) => {
-                            if (e.key === 'Enter' && e.shiftKey) {
-                                return;
-                            }
-                            if (e.key === 'Enter' && !e.shiftKey) {
-                                e.preventDefault();
-                                isValid && handleSubmit();
-                            }
-                        }}
-                    >
-
-                    </textarea>
+        <TextareaAutosize
+                    onClick={expand}
+                    minRows={isExpanded ? 3 : 1}
+                    {...field}
+                        placeholder='Take a note...'/>
                 </div>
             )}
             </Field>
@@ -97,7 +75,7 @@ if(authenticated){
 
 
 <Zoom in={isExpanded}>
-              <Fab loading={isSubmitting} type='submit' >
+              <Fab  type='submit' style={{ background: (mode==='dark'?'#808080':'#f5ba13') }}>
                 <AddIcon />
               </Fab>
             </Zoom>
@@ -124,17 +102,18 @@ if(authenticated){
 }
 else {
   return(
-    <>
-    <header style={{margin:"auto",height:"100vh",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column"}}>
-      <h1 style={{textAlign:"center",top:"50%",width:"50%",display:"flex"}}>Kindly sign in to use Keeper App</h1>
+    <div style={{margin:"auto",height:"50vh",width:'75vw',display:"flex",justifyContent:"center",flexDirection:"column"}}>
+    <header style={{display:'flex',flexDirection:"column",alignItems:'center',backgroundColor:(mode==='dark'?'#808080':'#f5ba13')}}>
+      <h1 style={{display:"flex"}}>Kindly sign in to use Keeper App</h1>
    
     
     
     
     
-     <h1>You can read ,create ,update ,delete your notes and access from any device</h1>
-     </header>
-  </>
+     <h1 style={{display:"flex"}}>You can read ,create ,update ,delete and access your notes  from any device</h1>
+     <h1 style={{display:"flex"}}>Other Features include Searching notes ,Dark Mode & Updating Password</h1>
+      </header>
+  </div>
   );
 }
 
